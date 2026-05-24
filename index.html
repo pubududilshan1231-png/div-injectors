@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>D.I.V. INJECTORS - Spare Parts Management</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    background:#07111f;
+    color:white;
+}
+
+header{
+    background:linear-gradient(135deg,#0d6efd,#001d3d);
+    padding:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 4px 20px rgba(0,0,0,0.4);
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+
+.logo{
+    font-size:28px;
+    font-weight:700;
+}
+
+.logo span{
+    color:#7cc7ff;
+}
+
+.container{
+    padding:25px;
+}
+
+.dashboard{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:15px;
+    margin-bottom:30px;
+}
+
+.card{
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.1);
+    padding:20px;
+    border-radius:20px;
+    backdrop-filter:blur(10px);
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+    border-color:#0d6efd;
+}
+
+.card h2{
+    font-size:15px;
+    margin-bottom:10px;
+    color:#7cc7ff;
+}
+
+.card p{
+    font-size:22px;
+    font-weight:700;
+}
+
+.main-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 25px;
+}
+
+.form-section{
+    background:rgba(255,255,255,0.05);
+    padding:25px;
+    border-radius:20px;
+    margin-bottom:30px;
+    border:1px solid rgba(255,255,255,0.08);
+}
+
+.form-section h2{
+    margin-bottom:20px;
+    color:#7cc7ff;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:12px;
+}
+
+input,select{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:12px;
+    background:#0f1f35;
+    color:white;
+    outline:none;
+}
+
+button{
+    background:#0d6efd;
+    color:white;
+    border:none;
+    padding:14px 20px;
+    border-radius:12px;
+    cursor:pointer;
+    font-weight:600;
+    transition:0.3s;
+}
+
+button:hover{
+    background:#0056d6;
+}
+
+.btn-success { background: #198754; }
+.btn-success:hover { background: #157347; }
+.btn-danger { background: #dc3545; padding: 5px 10px; font-size: 12px;}
+.btn-danger:hover { background: #bb2d3b; }
+.btn-info { background: #0dcaf0; color: #000; padding: 5px 10px; font-size: 12px;}
+.btn-info:hover { background: #31d2f2; color: #000; }
+.btn-warning { background: #ffc107; color: #000; padding: 5px 10px; font-size: 12px;}
+.btn-warning:hover { background: #ffca2c; color: #000; }
+
+.search-box{
+    margin-bottom:20px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    overflow:hidden;
+    border-radius:20px;
+    margin-bottom: 20px;
+}
+
+table thead{
+    background:#0d6efd;
+}
+
+table th,
+table td{
+    padding:12px 15px;
+    font-size: 14px;
+    text-align:left;
+}
+
+table tbody tr{
+    background:rgba(255,255,255,0.03);
+    border-bottom:1px solid rgba(255,255,255,0.05);
+}
+
+table tbody tr:hover{
+    background:rgba(255,255,255,0.06);
+}
+
+.low-stock{ color:#ff7070; font-weight:700; }
+.in-stock{ color:#5dff8b; font-weight:700; }
+
+/* Billing Section Styles */
+.billing-section {
+    background: rgba(255,255,255,0.05);
+    padding: 25px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.08);
+    height: fit-content;
+}
+.cart-table th, .cart-table td {
+    padding: 10px;
+    font-size: 14px;
+}
+.cart-total {
+    font-size: 16px;
+    font-weight: 500;
+    text-align: right;
+    margin: 5px 0;
+    color: #ffffff;
+}
+.cart-net-total {
+    font-size: 22px;
+    font-weight: 700;
+    text-align: right;
+    margin: 10px 0;
+    color: #5dff8b;
+}
+
+/* Printable Bill Container (Hidden on screen) */
+#receipt-print-area {
+    display: none;
+}
+
+footer{
+    text-align:center;
+    padding:20px;
+    color:#9fb8d6;
+    margin-top:30px;
+}
+
+@media(max-width:992px){
+    .main-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media(max-width:768px){
+    table{
+        display:block;
+        overflow-x:auto;
+    }
+}
+
+/* --- POCKET PRINTER PRINTING STYLES --- */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #receipt-print-area, #receipt-print-area * {
+        visibility: visible;
+    }
+    #receipt-print-area {
+        display: block !important;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 58mm;
+        color: #000 !important;
+        background: #fff !important;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 12px;
+        padding: 5px;
+    }
+    .receipt-header {
+        text-align: center;
+        margin-bottom: 10px;
+        border-bottom: 1px dashed #000;
+        padding-bottom: 5px;
+    }
+    .receipt-header h3 { font-size: 14px; font-weight: bold; }
+    .receipt-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 5px;
+    }
+    .receipt-table th, .receipt-table td {
+        padding: 3px 0;
+        font-size: 11px;
+        text-align: left;
+    }
+    .receipt-table .text-right { text-align: right; }
+    .receipt-summary-line {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        padding: 2px 0;
+    }
+    .receipt-total {
+        border-top: 1px dashed #000;
+        border-bottom: 1px dashed #000;
+        padding: 5px 0;
+        font-size: 13px;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        margin-top: 5px;
+    }
+    .receipt-footer {
+        text-align: center;
+        margin-top: 10px;
+        font-size: 10px;
+    }
+}
+</style>
+</head>
+<body>
+
+<header>
+    <div class="logo">D.I.V. <span>INJECTORS</span></div>
+    <button onclick="exportCSV()">Export CSV</button>
+</header>
+
+<div class="container">
+
+    <div class="dashboard">
+        <div class="card">
+            <h2>Total Items</h2>
+            <p id="totalItems">0</p>
+        </div>
+        <div class="card">
+            <h2>Low Stock</h2>
+            <p id="lowStock">0</p>
+        </div>
+        <div class="card">
+            <h2>Available Stock</h2>
+            <p id="availableStock">0</p>
+        </div>
+        <div class="card" style="border-color: #ffca2c;">
+            <h2 style="color: #ffca2c;">Total Stock Cost (මිලදී ගත් මුළු අගය)</h2>
+            <p id="totalStockCost" style="color: #ffca2c;">Rs. 0</p>
+        </div>
+        <div class="card" style="border-color: #5dff8b;">
+            <h2 style="color: #5dff8b;">Total Stock Value (විකුණුම් මුළු අගය)</h2>
+            <p id="totalStockValue" style="color: #5dff8b;">Rs. 0</p>
+        </div>
+    </div>
+
+    <div class="main-layout">
+        
+        <div>
+            <div class="form-section">
+                <h2>Add/Update Spare Part</h2>
+                <div class="form-grid">
+                    <input type="text" id="itemName" placeholder="Item Name">
+                    <input type="text" id="partNo" placeholder="Part Number">
+                    <select id="category">
+                        <option>Engine Parts</option>
+                        <option>Electrical</option>
+                        <option>Body Parts</option>
+                        <option>Bearings</option>
+                        <option>Filters</option>
+                        <option>Oils</option>
+                    </select>
+                    <input type="number" id="cost" placeholder="Cost Price (ගන්නා මිල)">
+                    <input type="number" id="price" placeholder="Selling Price (විකුණන මිල)">
+                    <input type="number" id="qty" placeholder="Quantity">
+                    <button onclick="addItem()">Save Item</button>
+                </div>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search spare parts..." onkeyup="searchItems()">
+            </div>
+
+            <table id="partsTable">
+               <thead>
+    <tr>
+        <th>Item Name</th>
+        <th>Part No</th>
+        <th>Category</th>
+        <th>Cost Price</th>
+        <th>Selling Price</th>
+        <th>Stock</th>
+        <th>Status</th>
+        <th>Action</th> </tr>
+</thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="billing-section">
+            <h2>Quick Bill (POS)</h2>
+            <div style="margin: 15px 0; display: flex; gap: 10px;">
+                <select id="billItemSelect"></select>
+                <input type="number" id="billQty" value="1" min="1" style="width: 80px;">
+                <button onclick="addToCart()">Add</button>
+            </div>
+
+            <table class="cart-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Total</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="cartBody"></tbody>
+            </table>
+
+            <div style="margin: 15px 0; display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 12px;">
+                <span style="font-size: 14px; color: #7cc7ff;">Discount (Rs):</span>
+                <input type="number" id="billDiscount" value="0" min="0" onkeyup="renderCart()" onchange="renderCart()" style="padding: 8px; border-radius: 8px;">
+            </div>
+
+            <div class="cart-total">Gross Total: Rs. <span id="cartTotalValue">0</span></div>
+            <div class="cart-total" style="color: #ff7070;">Discount: Rs. <span id="cartDiscountValue">0</span></div>
+            <div class="cart-net-total">Net Total: Rs. <span id="cartNetTotalValue">0</span></div>
+            
+            <button class="btn-success" style="width: 100%; padding: 15px;" onclick="printAndDeductStock()">Print Bill & Update Stock</button>
+        </div>
+
+    </div>
+
+</div>
+
+<div id="receipt-print-area">
+    <div class="receipt-header">
+        <h3>D.I.V. INJECTORS</h3>
+        <p>ටෙලි: 0702613089</p>
+        <p>Employee: Owner</p>
+        <p id="receipt-date"></p>
+    </div>
+    <table class="receipt-table">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th class="text-right">Qty x Price</th>
+                <th class="text-right">Amount</th>
+            </tr>
+        </thead>
+        <tbody id="receiptItemsBody"></tbody>
+    </table>
+    
+    <div class="receipt-summary-line" style="border-top: 1px dashed #000; padding-top: 5px;">
+        <span>Gross Total:</span>
+        <span id="receiptGrossValue">Rs. 0</span>
+    </div>
+    <div class="receipt-summary-line">
+        <span>Discount:</span>
+        <span id="receiptDiscountValuePrint">Rs. 0</span>
+    </div>
+    
+    <div class="receipt-total">
+        <span>NET TOTAL</span>
+        <span id="receiptTotalValue">Rs. 0</span>
+    </div>
+    
+    <div class="receipt-footer">
+    <p>ස්තූතියි! නැවත එන්න.</p>
+    </div>
+</div>
+
+<footer>
+    © 2026 D.I.V. INJECTORS | Spare Parts Management System
+</footer>
+
+<script>
+let items = JSON.parse(localStorage.getItem("D.I.V. INJECTORS_parts")) || [
+    { name:"Oil Filter", part:"OF-1001", category:"Filters", cost:1800, price:2500, qty:15 },
+    { name:"Brake Pad", part:"BP-2245", category:"Body Parts", cost:4200, price:5500, qty:5 },
+    { name:"Spark Plug", part:"SP-7788", category:"Engine Parts", cost:1200, price:1800, qty:20 }
+];
+
+let cart = [];
+
+function saveData(){
+    localStorage.setItem("D.I.V. INJECTORS_parts", JSON.stringify(items));
+}
+
+function renderTable(){
+    let body = document.getElementById("tableBody");
+    body.innerHTML = "";
+
+    items.forEach((item, index)=>{
+        let status = item.qty <= 5
+            ? `<span class="low-stock">Low ${item.qty}</span>`
+            : `<span class="in-stock">OK ${item.qty}</span>`;
+        
+        let displayCost = item.cost ? item.cost : 0;
+
+       body.innerHTML += `
+<tr>
+    <td>${item.name}</td>
+    <td>${item.part}</td>
+    <td>${item.category}</td>
+    <td>Rs. ${displayCost}</td>
+    <td>Rs. ${item.price}</td>
+    <td>${item.qty}</td>
+    <td>${status}</td>
+    <td>
+        <div style="display: flex; gap: 4px; flex-wrap: wrap; max-width: 220px;">
+            <button onclick="quickAddStock(${index})" class="btn-success" style="padding: 4px 6px; font-size: 11px;">+ Stock</button>
+            <button onclick="quickEditCost(${index})" class="btn-warning" style="padding: 4px 6px; font-size: 11px;">✎ Cost</button>
+            <button onclick="quickEditPrice(${index})" class="btn-info" style="padding: 4px 6px; font-size: 11px;">✎ Selling</button>
+            <button onclick="deleteItem(${index})" style="background:#dc3545; padding: 4px 6px; font-size: 11px;">X</button>
+        </div>
+    </td>
+</tr>
+`;
+    });
+
+    updateDashboard();
+    populateBillingDropdown();
+}
+
+function addItem(){
+    let name = document.getElementById("itemName").value.trim();
+    let part = document.getElementById("partNo").value.trim();
+    let category = document.getElementById("category").value;
+    let cost = Number(document.getElementById("cost").value);
+    let price = Number(document.getElementById("price").value);
+    let qty = Number(document.getElementById("qty").value);
+
+    if(name === "" || part === "" || !price || !qty || isNaN(cost)){
+        alert("Please fill all fields with valid data");
+        return;
+    }
+
+    let existingItem = items.find(i => i.part.toLowerCase() === part.toLowerCase() || i.name.toLowerCase() === name.toLowerCase());
+
+    if(existingItem) {
+        existingItem.qty += qty;
+        existingItem.price = price; 
+        existingItem.cost = cost;
+        alert(`"${existingItem.name}" දැනටමත් ඇති බැවින් නව තොගය එකතු කර, ගන්නා මිල හා විකුණන මිල යාවත්කාලීන කරන ලදී!`);
+    } else {
+        items.push({ name, part, category, cost, price, qty });
+    }
+
+    saveData();
+    renderTable();
+
+    document.getElementById("itemName").value="";
+    document.getElementById("partNo").value="";
+    document.getElementById("cost").value="";
+    document.getElementById("price").value="";
+    document.getElementById("qty").value="";
+}
+
+function quickAddStock(index) {
+    let item = items[index];
+    
+    let amountToAdd = prompt(`"${item.name}" සඳහා එකතු කිරීමට අවශ්‍ය නව ස්ටොක් ප්‍රමාණය (Qty) ඇතුලත් කරන්න:`, "10");
+    if (amountToAdd === null) return; 
+    
+    let qty = Number(amountToAdd);
+    if (isNaN(qty) || qty <= 0) {
+        alert("කරුණාකර වලංගු නිවැරදි ප්‍රමාණයක් ඇතුලත් කරන්න!");
+        return;
+    }
+    
+    let currentCost = item.cost ? item.cost : 0;
+    let newCostInput = prompt(`මෙම භාණ්ඩය මිලදී ගන්නා මිල (Cost) වෙනස් වී ඇත්නම් ඇතුලත් කරන්න:`, currentCost);
+    if (newCostInput !== null) {
+        let newCost = Number(newCostInput);
+        if (!isNaN(newCost) && newCost >= 0) {
+            items[index].cost = newCost;
+        }
+    }
+
+    let newPriceInput = prompt(`මෙම භාණ්ඩය විකුණන මිල (Selling Price) වෙනස් වී ඇත්නම් ඇතුලත් කරන්න:`, item.price);
+    if (newPriceInput !== null) {
+        let newPrice = Number(newPriceInput);
+        if (!isNaN(newPrice) && newPrice > 0) {
+            items[index].price = newPrice;
+        }
+    }
+    
+    items[index].qty += qty;
+    saveData();
+    renderTable();
+}
+
+function quickEditCost(index) {
+    let item = items[index];
+    let currentCost = item.cost ? item.cost : 0;
+    let costInput = prompt(`"${item.name}" සඳහා නව මිලදී ගත් මිල (Cost Price) ඇතුලත් කරන්න:`, currentCost);
+    
+    if (costInput === null) return; 
+    
+    let newCost = Number(costInput);
+    if (isNaN(newCost) || newCost < 0) {
+        alert("කරුණාකර වලංගු නිවැරදි මිලක් ඇතුලත් කරන්න!");
+        return;
+    }
+    
+    items[index].cost = newCost;
+    saveData();
+    renderTable();
+    alert("මිලදී ගත් මිල සාර්ථකව යාවත්කාලීන කරන ලදී!");
+}
+
+function quickEditPrice(index) {
+    let item = items[index];
+    let priceInput = prompt(`"${item.name}" සඳහා නව විකුණුම් මිල (Selling Price) ඇතුලත් කරන්න:`, item.price);
+    
+    if (priceInput === null) return; 
+    
+    let newPrice = Number(priceInput);
+    if (isNaN(newPrice) || newPrice <= 0) {
+        alert("කරුණාකර වලංගු නිවැරදි මිලක් ඇතුලත් කරන්න!");
+        return;
+    }
+    
+    items[index].price = newPrice;
+    saveData();
+    renderTable();
+    alert("විකුණුම් මිල සාර්ථකව යාවත්කාලීන කරන ලදී!");
+}
+
+function searchItems(){
+    let input = document.getElementById("searchInput").value.toLowerCase();
+    let rows = document.querySelectorAll("#tableBody tr");
+
+    rows.forEach(row=>{
+        let text = row.innerText.toLowerCase();
+        row.style.display = text.includes(input) ? "" : "none";
+    });
+}
+
+function updateDashboard(){
+    document.getElementById("totalItems").innerText = items.length;
+    let low = items.filter(i=>i.qty <= 5).length;
+    document.getElementById("lowStock").innerText = low;
+    let totalQty = items.reduce((sum,i)=>sum + Number(i.qty),0);
+    document.getElementById("availableStock").innerText = totalQty;
+    
+    // Total Stock Cost Calculation (Cost * Qty)
+    let totalCost = items.reduce((sum, i) => sum + ((i.cost ? Number(i.cost) : 0) * Number(i.qty)), 0);
+    document.getElementById("totalStockCost").innerText = "Rs. " + totalCost.toLocaleString();
+
+    // Total Stock Value Calculation (Price * Qty)
+    let totalValue = items.reduce((sum, i) => sum + (Number(i.price) * Number(i.qty)), 0);
+    document.getElementById("totalStockValue").innerText = "Rs. " + totalValue.toLocaleString();
+}
+
+/* --- BILLING / POS FUNCTIONS --- */
+function populateBillingDropdown() {
+    let select = document.getElementById("billItemSelect");
+    select.innerHTML = "";
+    items.forEach((item, index) => {
+        if(item.qty > 0) {
+            select.innerHTML += `<option value="${index}">${item.name} (Rs.${item.price})</option>`;
+        }
+    });
+}
+
+function addToCart() {
+    let select = document.getElementById("billItemSelect");
+    if(select.value === "") return;
+    
+    let itemIndex = Number(select.value);
+    let qtyToAdd = Number(document.getElementById("billQty").value);
+    let originalItem = items[itemIndex];
+
+    let existingCartItem = cart.find(c => c.itemIndex === itemIndex);
+    let currentCartQty = existingCartItem ? existingCartItem.qty : 0;
+
+    if(originalItem.qty < (currentCartQty + qtyToAdd)) {
+        alert("සමාවෙන්න, ප්‍රමාණවත් ස්ටොක් එකක් නොමැත! (ඉතිරිව ඇත්තේ: " + originalItem.qty + ")");
+        return;
+    }
+
+    if(existingCartItem) {
+        existingCartItem.qty += qtyToAdd;
+    } else {
+        cart.push({
+            itemIndex: itemIndex,
+            name: originalItem.name,
+            price: originalItem.price,
+            qty: qtyToAdd
+        });
+    }
+
+    renderCart();
+}
+
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    renderCart();
+}
+
+function renderCart() {
+    let body = document.getElementById("cartBody");
+    body.innerHTML = "";
+    let grossTotal = 0;
+
+    cart.forEach((cItem, index) => {
+        let itemTotal = cItem.price * cItem.qty;
+        grossTotal += itemTotal;
+        body.innerHTML += `
+        <tr>
+            <td>${cItem.name}</td>
+            <td>${cItem.qty}</td>
+            <td>Rs.${itemTotal}</td>
+            <td><button class="btn-danger" onclick="removeFromCart(${index})">X</button></td>
+        </tr>
+        `;
+    });
+
+    let discount = Number(document.getElementById("billDiscount").value) || 0;
+    if(discount < 0) discount = 0;
+    if(discount > grossTotal) discount = grossTotal;
+
+    let netTotal = grossTotal - discount;
+
+    document.getElementById("cartTotalValue").innerText = grossTotal;
+    document.getElementById("cartDiscountValue").innerText = discount;
+    document.getElementById("cartNetTotalValue").innerText = netTotal;
+}
+
+function printAndDeductStock() {
+    if(cart.length === 0) {
+        alert("කරුණාකර බිල්පතට අයිතමයන් ඇතුලත් කරන්න.");
+        return;
+    }
+
+    let grossTotal = 0;
+    let receiptBody = document.getElementById("receiptItemsBody");
+    receiptBody.innerHTML = "";
+
+    cart.forEach(cItem => {
+        let amount = cItem.price * cItem.qty;
+        grossTotal += amount;
+        receiptBody.innerHTML += `
+        <tr>
+            <td>${cItem.name}</td>
+            <td class="text-right">${cItem.qty} x ${cItem.price}</td>
+            <td class="text-right">Rs.${amount}</td>
+        </tr>
+        `;
+    });
+
+    let discount = Number(document.getElementById("billDiscount").value) || 0;
+    if(discount < 0) discount = 0;
+    if(discount > grossTotal) discount = grossTotal;
+    
+    let netTotal = grossTotal - discount;
+
+    cart.forEach(cItem => {
+        items[cItem.itemIndex].qty -= cItem.qty;
+    });
+
+    document.getElementById("receiptGrossValue").innerText = "Rs." + grossTotal;
+    document.getElementById("receiptDiscountValuePrint").innerText = "Rs." + discount;
+    document.getElementById("receiptTotalValue").innerText = "Rs." + netTotal;
+    
+    let now = new Date();
+    document.getElementById("receipt-date").innerText = now.toLocaleString();
+
+    saveData();
+    renderTable();
+    
+    window.print();
+
+    cart = [];
+    document.getElementById("billDiscount").value = "0";
+    renderCart();
+}
+
+function exportCSV(){
+    let csv = "Item Name,Part Number,Category,Cost Price,Selling Price,Quantity\n";
+    items.forEach(i=>{
+        csv += `${i.name},${i.part},${i.category},${i.cost || 0},${i.price},${i.qty}\n`;
+    });
+    let blob = new Blob([csv],{type:'text/csv'});
+    let a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = "D.I.V._INJECTORS_stock.csv";
+    a.click();
+}
+
+renderTable();
+
+function deleteItem(index) {
+    if(confirm("මෙම අයිතමය ස්ටොක් එකෙන් සම්පූර්ණයෙන්ම ඉවත් කිරීමට ඔබට විශ්වාසද?")) {
+        items.splice(index, 1);
+        saveData();
+        renderTable();
+    }
+}
+</script>
+
+</body>
+</html>
